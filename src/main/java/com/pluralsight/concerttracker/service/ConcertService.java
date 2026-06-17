@@ -29,6 +29,39 @@ public class ConcertService {
     public List<Venue> getAllVenues() {
         return venueRepository.findAll();
     }
+    public Venue addVenue(String name, String city, int capacity) {
+        return venueRepository.save(new Venue(name, city, capacity));
+    }
+
+    public void updateVenueCapacity(int id, int capacity) {
+        Venue venue = venueRepository.findById(id).orElse(null);
+        if (venue == null) {
+            System.out.println("Venue not found.");
+            return;
+        }
+        venue.setCapacity(capacity);
+        venueRepository.save(venue);
+    }
+
+    public void deleteVenue(int id) {
+        if (!venueRepository.existsById(id)) {
+            System.out.println("Venue not found.");
+            return;
+        }
+        venueRepository.deleteById(id);
+    }
+
+    public List<Venue> findVenuesByCity(String city) {
+        return venueRepository.findByCity(city);
+    }
+
+    public List<Venue> findVenuesByName(String name) {
+        return venueRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    public List<Venue> findVenuesByMinCapacity(int capacity) {
+        return venueRepository.findByCapacityGreaterThanEqual(capacity);
+    }
 
     public List<Artist> getAllArtists() {
         return artistRepository.findAll();
