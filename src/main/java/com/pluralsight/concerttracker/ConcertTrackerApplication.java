@@ -96,8 +96,14 @@ public class ConcertTrackerApplication implements CommandLineRunner {
 
             switch (choice) {
                 case 1 -> listAllVenues();
+                case 2 -> addVenue(scanner);
+                case 3 -> findVenuesByCity(scanner);
+                case 4 -> findVenuesByName(scanner);
+                case 5 -> findVenuesByMinCapacity(scanner);
+                case 6 -> updateVenueCapacity(scanner);
+                case 7 -> deleteVenue(scanner);
                 case 0 -> System.out.println("Returning to main menu...");
-                default -> System.out.println("Coming soon.");
+                default -> System.out.println("Invalid choice.");
             }
         }
     }
@@ -112,5 +118,57 @@ public class ConcertTrackerApplication implements CommandLineRunner {
                 System.out.println(v);
             }
         }
+    }
+    private void addVenue(Scanner scanner) {
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("City: ");
+        String city = scanner.nextLine().trim();
+        System.out.print("Capacity: ");
+        int capacity = Integer.parseInt(scanner.nextLine().trim());
+        Venue v = concertService.addVenue(name, city, capacity);
+        System.out.println("Added: " + v);
+    }
+
+    private void findVenuesByCity(Scanner scanner) {
+        System.out.print("City: ");
+        String city = scanner.nextLine().trim();
+        List<Venue> results = concertService.findVenuesByCity(city);
+        if (results.isEmpty()) System.out.println("No venues found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void findVenuesByName(Scanner scanner) {
+        System.out.print("Name contains: ");
+        String name = scanner.nextLine().trim();
+        List<Venue> results = concertService.findVenuesByName(name);
+        if (results.isEmpty()) System.out.println("No venues found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void findVenuesByMinCapacity(Scanner scanner) {
+        System.out.print("Minimum capacity: ");
+        int cap = Integer.parseInt(scanner.nextLine().trim());
+        List<Venue> results = concertService.findVenuesByMinCapacity(cap);
+        if (results.isEmpty()) System.out.println("No venues found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void updateVenueCapacity(Scanner scanner) {
+        listAllVenues();
+        System.out.print("Venue ID: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        System.out.print("New capacity: ");
+        int capacity = Integer.parseInt(scanner.nextLine().trim());
+        concertService.updateVenueCapacity(id, capacity);
+        System.out.println("Updated.");
+    }
+
+    private void deleteVenue(Scanner scanner) {
+        listAllVenues();
+        System.out.print("Venue ID to delete: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        concertService.deleteVenue(id);
+        System.out.println("Deleted.");
     }
 }
