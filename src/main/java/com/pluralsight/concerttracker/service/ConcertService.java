@@ -99,6 +99,21 @@ public class ConcertService {
     public List<Promoter> getAllPromoters() {
         return promoterRepository.findAll();
     }
+    public Promoter addPromoter(String name) {
+        return promoterRepository.save(new Promoter(name));
+    }
+
+    public void deletePromoter(int id) {
+        if (!promoterRepository.existsById(id)) {
+            System.out.println("Promoter not found.");
+            return;
+        }
+        promoterRepository.deleteById(id);
+    }
+
+    public List<Promoter> findPromotersByName(String name) {
+        return promoterRepository.findByNameContainingIgnoreCase(name);
+    }
     public void loadStartingData(){
         if (concertRepository.count() > 0) return;
 
