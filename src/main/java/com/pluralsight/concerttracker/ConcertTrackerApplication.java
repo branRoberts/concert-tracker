@@ -55,6 +55,7 @@ public class ConcertTrackerApplication implements CommandLineRunner {
                 case 1 -> listAllConcerts();
                 case 3 -> artistDisplay();
                 case 4 -> venueDisplay();
+                case 5 -> promoterDisplay();
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Coming soon.");
             }
@@ -253,6 +254,65 @@ public class ConcertTrackerApplication implements CommandLineRunner {
         System.out.print("Artist ID to delete: ");
         int id = Integer.parseInt(scanner.nextLine().trim());
         concertService.deleteArtist(id);
+        System.out.println("Deleted.");
+    }
+    private void promoterDisplay() {
+        Scanner scanner = new Scanner(System.in);
+        int choice = -1;
+
+        while (choice != 0) {
+            System.out.println("\n=== Promoters ===");
+            System.out.println("1) List all promoters");
+            System.out.println("2) Add a promoter");
+            System.out.println("3) Find by name");
+            System.out.println("4) Delete");
+            System.out.println("0) Back");
+            System.out.print("Choice: ");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, try again.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1 -> listAllPromoters();
+                case 2 -> addPromoter(scanner);
+                case 3 -> findPromotersByName(scanner);
+                case 4 -> deletePromoter(scanner);
+                case 0 -> System.out.println("Returning to main menu...");
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void listAllPromoters() {
+        List<Promoter> promoters = concertService.getAllPromoters();
+        if (promoters.isEmpty()) System.out.println("No promoters found.");
+        else promoters.forEach(System.out::println);
+    }
+
+    private void addPromoter(Scanner scanner) {
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        Promoter p = concertService.addPromoter(name);
+        System.out.println("Added: " + p);
+    }
+
+    private void findPromotersByName(Scanner scanner) {
+        System.out.print("Name contains: ");
+        String name = scanner.nextLine().trim();
+        List<Promoter> results = concertService.findPromotersByName(name);
+        if (results.isEmpty()) System.out.println("No promoters found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void deletePromoter(Scanner scanner) {
+        listAllPromoters();
+        System.out.print("Promoter ID to delete: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        concertService.deletePromoter(id);
         System.out.println("Deleted.");
     }
 }
