@@ -53,6 +53,7 @@ public class ConcertTrackerApplication implements CommandLineRunner {
 
             switch (choice) {
                 case 1 -> listAllConcerts();
+                case 3 -> artistDisplay();
                 case 4 -> venueDisplay();
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Coming soon.");
@@ -169,6 +170,89 @@ public class ConcertTrackerApplication implements CommandLineRunner {
         System.out.print("Venue ID to delete: ");
         int id = Integer.parseInt(scanner.nextLine().trim());
         concertService.deleteVenue(id);
+        System.out.println("Deleted.");
+    }
+    private void artistDisplay() {
+        Scanner scanner = new Scanner(System.in);
+        int choice = -1;
+
+        while (choice != 0) {
+            System.out.println("\n=== Artists ===");
+            System.out.println("1) List all artists");
+            System.out.println("2) Add an artist");
+            System.out.println("3) Find by genre");
+            System.out.println("4) Find by name");
+            System.out.println("5) Update genre");
+            System.out.println("6) Delete");
+            System.out.println("0) Back");
+            System.out.print("Choice: ");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, try again.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1 -> listAllArtists();
+                case 2 -> addArtist(scanner);
+                case 3 -> findArtistsByGenre(scanner);
+                case 4 -> findArtistsByName(scanner);
+                case 5 -> updateArtistGenre(scanner);
+                case 6 -> deleteArtist(scanner);
+                case 0 -> System.out.println("Returning to main menu...");
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void listAllArtists() {
+        List<Artist> artists = concertService.getAllArtists();
+        if (artists.isEmpty()) System.out.println("No artists found.");
+        else artists.forEach(System.out::println);
+    }
+
+    private void addArtist(Scanner scanner) {
+        System.out.print("Name: ");
+        String name = scanner.nextLine().trim();
+        System.out.print("Genre: ");
+        String genre = scanner.nextLine().trim();
+        Artist a = concertService.addArtist(name, genre);
+        System.out.println("Added: " + a);
+    }
+
+    private void findArtistsByGenre(Scanner scanner) {
+        System.out.print("Genre: ");
+        String genre = scanner.nextLine().trim();
+        List<Artist> results = concertService.findArtistsByGenre(genre);
+        if (results.isEmpty()) System.out.println("No artists found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void findArtistsByName(Scanner scanner) {
+        System.out.print("Name contains: ");
+        String name = scanner.nextLine().trim();
+        List<Artist> results = concertService.findArtistsByName(name);
+        if (results.isEmpty()) System.out.println("No artists found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void updateArtistGenre(Scanner scanner) {
+        listAllArtists();
+        System.out.print("Artist ID: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        System.out.print("New genre: ");
+        String genre = scanner.nextLine().trim();
+        concertService.updateArtistGenre(id, genre);
+        System.out.println("Updated.");
+    }
+
+    private void deleteArtist(Scanner scanner) {
+        listAllArtists();
+        System.out.print("Artist ID to delete: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        concertService.deleteArtist(id);
         System.out.println("Deleted.");
     }
 }
