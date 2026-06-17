@@ -37,4 +37,25 @@ public class ConcertService {
     public List<Promoter> getAllPromoters() {
         return promoterRepository.findAll();
     }
+    public void loadStartingData(){
+        if (concertRepository.count() > 0) return;
+
+        Venue v1 = venueRepository.save(new Venue("Madison Square Garden", "New York", 20000));
+        Venue v2 = venueRepository.save(new Venue("The Fillmore", "San Francisco", 1150));
+        Venue v3 = venueRepository.save(new Venue("Red Rocks Amphitheatre", "Denver", 9525));
+
+        Artist a1 = artistRepository.save(new Artist("Taylor Swift", "Pop"));
+        Artist a2 = artistRepository.save(new Artist("Metallica", "Metal"));
+        Artist a3 = artistRepository.save(new Artist("Miles Davis", "Jazz"));
+
+        Promoter p1 = promoterRepository.save(new Promoter("Live Nation"));
+        Promoter p2 = promoterRepository.save(new Promoter("AEG Presents"));
+
+        concertRepository.save(new Concert(2022, 150.00, 18000, a1, v1, p1));
+        concertRepository.save(new Concert(2023, 200.00, 20000, a1, v3, p1));
+        concertRepository.save(new Concert(2021, 75.00, 1100, a2, v2, p2));
+        concertRepository.save(new Concert(2022, 95.00, 9000, a2, v3, p2));
+        concertRepository.save(new Concert(2023, 50.00, 800, a3, v2, p1));
+        concertRepository.save(new Concert(2021, 120.00, 15000, a1, v1, p2));
+    }
 }
