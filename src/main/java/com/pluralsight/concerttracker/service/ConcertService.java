@@ -25,7 +25,69 @@ public class ConcertService {
     public List<Concert> getAllConcerts() {
         return concertRepository.findAll();
     }
+    public Optional<Concert> getConcertById(int id) {
+        return concertRepository.findById(id);
+    }
 
+    public Concert addConcert(int year, double ticketPrice, int ticketsSold, int artistId, int venueId, int promoterId) {
+        Artist artist = artistRepository.findById(artistId).orElse(null);
+        Venue venue = venueRepository.findById(venueId).orElse(null);
+        Promoter promoter = promoterRepository.findById(promoterId).orElse(null);
+
+        if (artist == null || venue == null || promoter == null) {
+            System.out.println("Invalid artist, venue, or promoter.");
+            return null;
+        }
+        if (ticketsSold > venue.getCapacity()) {
+            System.out.println("Tickets sold exceeds venue capacity of " + venue.getCapacity() + ".");
+            return null;
+        }
+        if (ticketPrice < 0 || ticketsSold < 0) {
+            System.out.println("Ticket price and tickets sold cannot be negative.");
+            return null;
+        }
+        return concertRepository.save(new Concert(year, ticketPrice, ticketsSold, artist, venue, promoter));
+    }
+
+    public void updateConcertPrice(int id, double price) {
+        Concert concert = concertRepository.findById(id).orElse(null);
+        if (concert == null) {
+            System.out.println("Concert not found.");
+            return;
+        }
+        if (price < 0) {
+            System.out.println("Price cannot be negative.");
+            return;
+        }
+        concert.setTicketPrice(price);
+        concertRepository.save(concert);
+    }
+
+    public void updateConcertTicketsSold(int id, int ticketsSold) {
+        Concert concert = concertRepository.findById(id).orElse(null);
+        if (concert == null) {
+            System.out.println("Concert not found.");
+            return;
+        }
+        if (ticketsSold < 0) {
+            System.out.println("Tickets sold cannot be negative.");
+            return;
+        }
+        if (ticketsSold > concert.getVenue().getCapacity()) {
+            System.out.println("Tickets sold exceeds venue capacity of " + concert.getVenue().getCapacity() + ".");
+            return;
+        }
+        concert.setTicketsSold(ticketsSold);
+        concertRepository.save(concert);
+    }
+
+    public void deleteConcert(int id) {
+        if (!concertRepository.existsById(id)) {
+            System.out.println("Concert not found.");
+            return;
+        }
+        concertRepository.deleteById(id);
+    }
     public List<Venue> getAllVenues() {
         return venueRepository.findAll();
     }
