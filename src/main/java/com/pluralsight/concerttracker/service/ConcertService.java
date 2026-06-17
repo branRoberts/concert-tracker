@@ -66,6 +66,35 @@ public class ConcertService {
     public List<Artist> getAllArtists() {
         return artistRepository.findAll();
     }
+    public Artist addArtist(String name, String genre) {
+        return artistRepository.save(new Artist(name, genre));
+    }
+
+    public void updateArtistGenre(int id, String genre) {
+        Artist artist = artistRepository.findById(id).orElse(null);
+        if (artist == null) {
+            System.out.println("Artist not found.");
+            return;
+        }
+        artist.setGenre(genre);
+        artistRepository.save(artist);
+    }
+
+    public void deleteArtist(int id) {
+        if (!artistRepository.existsById(id)) {
+            System.out.println("Artist not found.");
+            return;
+        }
+        artistRepository.deleteById(id);
+    }
+
+    public List<Artist> findArtistsByGenre(String genre) {
+        return artistRepository.findByGenreIgnoreCase(genre);
+    }
+
+    public List<Artist> findArtistsByName(String name) {
+        return artistRepository.findByNameContainingIgnoreCase(name);
+    }
 
     public List<Promoter> getAllPromoters() {
         return promoterRepository.findAll();
