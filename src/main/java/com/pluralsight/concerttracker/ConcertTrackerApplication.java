@@ -57,6 +57,7 @@ public class ConcertTrackerApplication implements CommandLineRunner {
                 case 3 -> artistDisplay();
                 case 4 -> venueDisplay();
                 case 5 -> promoterDisplay();
+                case 6 -> reportsDisplay();
                 case 0 -> System.out.println("Goodbye!");
                 default -> System.out.println("Coming soon.");
             }
@@ -500,5 +501,88 @@ public class ConcertTrackerApplication implements CommandLineRunner {
         System.out.print("Earliest year: ");
         int year = Integer.parseInt(scanner.nextLine().trim());
         printConcertResults(concertService.findByMaxPriceAndEarliestYear(price, year));
+    }
+    private void reportsDisplay() {
+        Scanner scanner = new Scanner(System.in);
+        int choice = -1;
+
+        while (choice != 0) {
+            System.out.println("\n=== Reports ===");
+            System.out.println("1) Revenue per venue");
+            System.out.println("2) Busiest venue and artist");
+            System.out.println("3) Average ticket price by year");
+            System.out.println("4) Capacity report");
+            System.out.println("0) Back");
+            System.out.print("Choice: ");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, try again.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1 -> reportRevenue();
+                case 2 -> reportBusiest();
+                case 3 -> reportAvgPrice();
+                case 4 -> reportCapacity();
+                case 0 -> System.out.println("Returning to main menu...");
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void reportRevenue() {
+        System.out.println("\n--- Revenue Per Venue ---");
+        List<Object[]> results = concertService.getRevenuePerVenue();
+        if (results.isEmpty()) System.out.println("No data.");
+        else {
+            for (Object[] row : results) {
+                System.out.printf("%-30s $%,.2f%n", row[0], row[1]);
+            }
+        }
+    }
+
+    private void reportBusiest() {
+        System.out.println("\n--- Busiest Venue ---");
+        List<Object[]> venues = concertService.getConcertsPerVenue();
+        if (!venues.isEmpty()) {
+            Object[] top = venues.get(0);
+            System.out.printf("%s — %d concerts%n", top[0], ((Number) top[1]).intValue());
+        }
+
+        System.out.println("\n--- Busiest Artist ---");
+        List<Object[]> artists = concertService.getConcertsPerArtist();
+        if (!artists.isEmpty()) {
+            Object[] top = artists.get(0);
+            System.out.printf("%s — %d concerts%n", top[0], ((Number) top[1]).intValue());
+        }
+    }
+
+    private void reportAvgPrice() {
+        System.out.println("\n--- Average Ticket Price By Year ---");
+        List<Object[]> results = concertService.getAvgPriceByYear();
+        if (results.isEmpty()) System.out.println("No data.");
+        else {
+            for (Object[] row : results) {
+                System.out.printf("%d — $%.2f%n", ((Number) row[0]).intValue(), row[1]);
+            }
+        }
+    }
+
+    private void reportCapacity() {
+        System.out.println("\n--- Capacity Report ---");
+        List<Concert> concerts = concertService.getAllConcertsForCapacityReport();
+        if (concerts.isEmpty()) System.out.println("No data.");
+        else {
+            for (Concert c : concerts) {
+                double pct = (double) c.getTicketsSold() / c.getVenue().getCapacity() * 100;
+                String status = pct >= 100 ? " *** SOLD OUT ***" : "";
+                System.out.printf("%-45s %d/%d (%.1f%%)%s%n",
+                        c.getArtist().getName() + " at " + c.getVenue().getName(),
+                        c.getTicketsSold(), c.getVenue().getCapacity(), pct, status);
+            }
+        }
     }
 }
