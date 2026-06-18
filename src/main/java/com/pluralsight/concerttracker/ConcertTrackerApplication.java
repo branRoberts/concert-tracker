@@ -53,6 +53,7 @@ public class ConcertTrackerApplication implements CommandLineRunner {
 
             switch (choice) {
                 case 1 -> concertDisplay();
+                case 2 -> searchDisplay();
                 case 3 -> artistDisplay();
                 case 4 -> venueDisplay();
                 case 5 -> promoterDisplay();
@@ -412,5 +413,92 @@ public class ConcertTrackerApplication implements CommandLineRunner {
         int id = Integer.parseInt(scanner.nextLine().trim());
         concertService.deleteConcert(id);
         System.out.println("Deleted.");
+    }
+    private void searchDisplay() {
+        Scanner scanner = new Scanner(System.in);
+        int choice = -1;
+
+        while (choice != 0) {
+            System.out.println("\n=== Search Concerts ===");
+            System.out.println("1) By year");
+            System.out.println("2) By artist");
+            System.out.println("3) By venue");
+            System.out.println("4) By city");
+            System.out.println("5) By maximum price");
+            System.out.println("6) By price range");
+            System.out.println("7) Advanced (max price + earliest year)");
+            System.out.println("0) Back");
+            System.out.print("Choice: ");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, try again.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1 -> searchByYear(scanner);
+                case 2 -> searchByArtist(scanner);
+                case 3 -> searchByVenue(scanner);
+                case 4 -> searchByCity(scanner);
+                case 5 -> searchByMaxPrice(scanner);
+                case 6 -> searchByPriceRange(scanner);
+                case 7 -> searchAdvanced(scanner);
+                case 0 -> System.out.println("Returning to main menu...");
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void printConcertResults(List<Concert> results) {
+        if (results.isEmpty()) System.out.println("No concerts found.");
+        else results.forEach(System.out::println);
+    }
+
+    private void searchByYear(Scanner scanner) {
+        System.out.print("Year: ");
+        int year = Integer.parseInt(scanner.nextLine().trim());
+        printConcertResults(concertService.findByYear(year));
+    }
+
+    private void searchByArtist(Scanner scanner) {
+        System.out.print("Artist name contains: ");
+        String name = scanner.nextLine().trim();
+        printConcertResults(concertService.findByArtistName(name));
+    }
+
+    private void searchByVenue(Scanner scanner) {
+        System.out.print("Venue name contains: ");
+        String name = scanner.nextLine().trim();
+        printConcertResults(concertService.findByVenueName(name));
+    }
+
+    private void searchByCity(Scanner scanner) {
+        System.out.print("City: ");
+        String city = scanner.nextLine().trim();
+        printConcertResults(concertService.findByCity(city));
+    }
+
+    private void searchByMaxPrice(Scanner scanner) {
+        System.out.print("Maximum price: ");
+        double price = Double.parseDouble(scanner.nextLine().trim());
+        printConcertResults(concertService.findByMaxPrice(price));
+    }
+
+    private void searchByPriceRange(Scanner scanner) {
+        System.out.print("Minimum price: ");
+        double min = Double.parseDouble(scanner.nextLine().trim());
+        System.out.print("Maximum price: ");
+        double max = Double.parseDouble(scanner.nextLine().trim());
+        printConcertResults(concertService.findByPriceRange(min, max));
+    }
+
+    private void searchAdvanced(Scanner scanner) {
+        System.out.print("Maximum price: ");
+        double price = Double.parseDouble(scanner.nextLine().trim());
+        System.out.print("Earliest year: ");
+        int year = Integer.parseInt(scanner.nextLine().trim());
+        printConcertResults(concertService.findByMaxPriceAndEarliestYear(price, year));
     }
 }
