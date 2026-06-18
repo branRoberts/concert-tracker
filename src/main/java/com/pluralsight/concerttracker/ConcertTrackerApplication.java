@@ -52,7 +52,7 @@ public class ConcertTrackerApplication implements CommandLineRunner {
             }
 
             switch (choice) {
-                case 1 -> listAllConcerts();
+                case 1 -> concertDisplay();
                 case 3 -> artistDisplay();
                 case 4 -> venueDisplay();
                 case 5 -> promoterDisplay();
@@ -313,6 +313,104 @@ public class ConcertTrackerApplication implements CommandLineRunner {
         System.out.print("Promoter ID to delete: ");
         int id = Integer.parseInt(scanner.nextLine().trim());
         concertService.deletePromoter(id);
+        System.out.println("Deleted.");
+    }
+    private void concertDisplay() {
+        Scanner scanner = new Scanner(System.in);
+        int choice = -1;
+
+        while (choice != 0) {
+            System.out.println("\n=== Concerts ===");
+            System.out.println("1) List all concerts");
+            System.out.println("2) View concert by ID");
+            System.out.println("3) Add a concert");
+            System.out.println("4) Update ticket price");
+            System.out.println("5) Update tickets sold");
+            System.out.println("6) Delete");
+            System.out.println("0) Back");
+            System.out.print("Choice: ");
+
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input, try again.");
+                continue;
+            }
+
+            switch (choice) {
+                case 1 -> listAllConcerts();
+                case 2 -> viewConcertById(scanner);
+                case 3 -> addConcert(scanner);
+                case 4 -> updateConcertPrice(scanner);
+                case 5 -> updateConcertTicketsSold(scanner);
+                case 6 -> deleteConcert(scanner);
+                case 0 -> System.out.println("Returning to main menu...");
+                default -> System.out.println("Invalid choice.");
+            }
+        }
+    }
+
+    private void viewConcertById(Scanner scanner) {
+        System.out.print("Concert ID: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        concertService.getConcertById(id).ifPresentOrElse(
+                System.out::println,
+                () -> System.out.println("Concert not found.")
+        );
+    }
+
+    private void addConcert(Scanner scanner) {
+        System.out.println("\n--- Artists ---");
+        concertService.getAllArtists().forEach(System.out::println);
+        System.out.print("Artist ID: ");
+        int artistId = Integer.parseInt(scanner.nextLine().trim());
+
+        System.out.println("\n--- Venues ---");
+        concertService.getAllVenues().forEach(System.out::println);
+        System.out.print("Venue ID: ");
+        int venueId = Integer.parseInt(scanner.nextLine().trim());
+
+        System.out.println("\n--- Promoters ---");
+        concertService.getAllPromoters().forEach(System.out::println);
+        System.out.print("Promoter ID: ");
+        int promoterId = Integer.parseInt(scanner.nextLine().trim());
+
+        System.out.print("Year: ");
+        int year = Integer.parseInt(scanner.nextLine().trim());
+        System.out.print("Ticket price: ");
+        double price = Double.parseDouble(scanner.nextLine().trim());
+        System.out.print("Tickets sold: ");
+        int ticketsSold = Integer.parseInt(scanner.nextLine().trim());
+
+        Concert c = concertService.addConcert(year, price, ticketsSold, artistId, venueId, promoterId);
+        if (c != null) System.out.println("Added: " + c);
+    }
+
+    private void updateConcertPrice(Scanner scanner) {
+        listAllConcerts();
+        System.out.print("Concert ID: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        System.out.print("New price: ");
+        double price = Double.parseDouble(scanner.nextLine().trim());
+        concertService.updateConcertPrice(id, price);
+        System.out.println("Updated.");
+    }
+
+    private void updateConcertTicketsSold(Scanner scanner) {
+        listAllConcerts();
+        System.out.print("Concert ID: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        System.out.print("New tickets sold: ");
+        int ticketsSold = Integer.parseInt(scanner.nextLine().trim());
+        concertService.updateConcertTicketsSold(id, ticketsSold);
+        System.out.println("Updated.");
+    }
+
+    private void deleteConcert(Scanner scanner) {
+        listAllConcerts();
+        System.out.print("Concert ID to delete: ");
+        int id = Integer.parseInt(scanner.nextLine().trim());
+        concertService.deleteConcert(id);
         System.out.println("Deleted.");
     }
 }
