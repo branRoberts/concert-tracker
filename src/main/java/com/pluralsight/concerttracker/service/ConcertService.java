@@ -224,4 +224,23 @@ public class ConcertService {
         concertRepository.save(new Concert(2023, 50.00, 800, a3, v2, p1));
         concertRepository.save(new Concert(2021, 120.00, 15000, a1, v1, p2));
     }
+    public List<Object[]> getRevenuePerVenue() {
+        return concertRepository.revenuePerVenue();
+    }
+
+    public List<Object[]> getConcertsPerVenue() {
+        return concertRepository.concertsPerVenue();
+    }
+
+    public List<Object[]> getConcertsPerArtist() {
+        return concertRepository.concertsPerArtist();
+    }
+
+    public List<Object[]> getAvgPriceByYear() {
+        return concertRepository.avgPriceByYear();
+    }
+
+    public List<Concert> getAllConcertsForCapacityReport() {
+        return concertRepository.findAllForCapacityReport();
+    }
 }
